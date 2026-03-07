@@ -1,34 +1,37 @@
-import { Outlet } from 'react-router-dom';
-import { useState, useEffect, useMemo } from 'react';
+import { Outlet } from "react-router-dom";
+import { useState, useEffect, useMemo } from "react";
 
 function MainLayout() {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
 
-  const testimonials = useMemo(() => [
-    {
-      text: "ToggleNow helped us achieve 100% MCA compliance in just 3 weeks. Their expertise in SAP audit trails is unmatched.",
-      name: "CFO"
-    },
-    {
-      text: "The audit trail quiz immediately identified our compliance gaps. Highly recommend for any SAP user concerned about MCA rules.",
-      name: "IT Director"
-    },
-    {
-      text: "Professional, quick, and thorough. ToggleNow's solution saved us from potential penalties and audit issues.",
-      name: "SAP Manager",
-    }
-  ], []);
+  const testimonials = useMemo(
+    () => [
+      {
+        text: "ToggleNow helped us achieve 100% MCA compliance in just 3 weeks. Their expertise in SAP audit trails is unmatched.",
+        name: "CFO",
+      },
+      {
+        text: "The audit trail quiz immediately identified our compliance gaps. Highly recommend for any SAP user concerned about MCA rules.",
+        name: "IT Director, Leading FMCG Company",
+      },
+      {
+        text: "Professional, quick, and thorough. ToggleNow's solution saved us from potential penalties and audit issues.",
+        name: "SAP Manager",
+      },
+    ],
+    [],
+  );
 
   // Check screen size on mount and resize
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 992);
     };
-    
+
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   useEffect(() => {
@@ -43,9 +46,9 @@ function MainLayout() {
     <>
       <div className="testimonials-container">
         {testimonials.map((testimonial, index) => (
-          <div 
+          <div
             key={index}
-            className={`testimonial-card ${index === activeTestimonial ? 'active' : ''}`}
+            className={`testimonial-card ${index === activeTestimonial ? "active" : ""}`}
           >
             <div className="stars">★★★★★</div>
             <p className="testimonial-text">{testimonial.text}</p>
@@ -60,9 +63,9 @@ function MainLayout() {
 
       <div className="testimonial-dots">
         {testimonials.map((_, index) => (
-          <span 
+          <span
             key={index}
-            className={`dot ${index === activeTestimonial ? 'active' : ''}`}
+            className={`dot ${index === activeTestimonial ? "active" : ""}`}
             onClick={() => setActiveTestimonial(index)}
           ></span>
         ))}
@@ -77,11 +80,12 @@ function MainLayout() {
         <aside className="sidebar-left">
           <div className="sidebar-content">
             <div className="sidebar-logo">
-              <a href="https://togglenow.com" target="_blank" rel="noopener noreferrer">
-                <img 
-                  src="https://togglenow.com/wp-content/uploads/2024/06/Tnow-white-logo-e1698911941985-1-1.png" 
-                  alt="ToggleNow" 
-                />
+              <a
+                href="https://togglenow.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img src="../../src/assets/togglenow.png" alt="ToggleNow" />
               </a>
             </div>
 
@@ -92,8 +96,23 @@ function MainLayout() {
             <TestimonialsSection />
 
             <div className="sidebar-footer">
-              <p>This quiz is created by <a className="mainlink" href="https://togglenow.com" target="_blank" rel="noopener noreferrer">ToggleNow</a> specialists to help you assess SAP audit trail readiness for MCA compliance.</p>
-              <p>Your responses remain confidential and are used only to generate your personalized report.</p>
+              <p>
+                This quiz is created by{" "}
+                <a
+                  className="mainlink"
+                  href="https://togglenow.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  ToggleNow
+                </a>{" "}
+                specialists to help you assess SAP audit trail readiness for MCA
+                compliance.
+              </p>
+              <p>
+                Your responses remain confidential and are used only to generate
+                your personalized report.
+              </p>
             </div>
           </div>
         </aside>
@@ -106,10 +125,14 @@ function MainLayout() {
           <div className="mobile-header">
             <div className="mobile-header-content">
               <div className="sidebar-logo">
-                <a href="https://togglenow.com" target="_blank" rel="noopener noreferrer">
-                  <img 
-                    src="https://togglenow.com/wp-content/uploads/2024/06/Tnow-white-logo-e1698911941985-1-1.png" 
-                    alt="ToggleNow" 
+                <a
+                  href="https://togglenow.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    src="https://togglenow.com/wp-content/uploads/2024/06/Tnow-white-logo-e1698911941985-1-1.png"
+                    alt="ToggleNow"
                   />
                 </a>
               </div>
@@ -130,12 +153,27 @@ function MainLayout() {
         {isMobile && (
           <div className="mobile-reviews-section">
             <h3 className="mobile-reviews-title">What Our Clients Say</h3>
-            
+
             <TestimonialsSection />
 
             <div className="mobile-reviews-footer">
-              <p>This quiz is created by <a className="mainlink" href="https://togglenow.com" target="_blank" rel="noopener noreferrer">ToggleNow</a> specialists to help you assess SAP audit trail readiness for MCA compliance.</p>
-              <p>Your responses remain confidential and are used only to generate your personalized report.</p>
+              <p>
+                This quiz is created by{" "}
+                <a
+                  className="mainlink"
+                  href="https://togglenow.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  ToggleNow
+                </a>{" "}
+                specialists to help you assess SAP audit trail readiness for MCA
+                compliance.
+              </p>
+              <p>
+                Your responses remain confidential and are used only to generate
+                your personalized report.
+              </p>
             </div>
           </div>
         )}
