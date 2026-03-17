@@ -70,11 +70,14 @@ function Home() {
         <div className="home-content">
           <div className="home-inner">
             <h1 className="main-heading" style={{ fontSize: "1.67rem" }}>
-              Is your SAP ready for the MCA Rule 11(g) audit?
+              Is your SAP System ready for the MCA Rule 11(g) audit?
             </h1>
             <p className="cta-description">
               Takes 2 minutes · Used by 500+ listed companies
             </p>
+             <p className="cta-description" style={{ marginTop: "-15px",fontSize: "1.05rem"}}>
+                *No signup required.
+              </p>
             <div className="cta-button">
               <button
                 className="btn-primary-large"
@@ -98,9 +101,7 @@ function Home() {
                 Avoid Penalties. Prove Compliance.
               </h2>
 
-              <p className="meta-text">
-                No signup required anywhere else.
-              </p>
+             
             </div>
 
             <div className="social-proof-box">
