@@ -124,7 +124,7 @@ function MainLayout() {
       {/* MAIN CONTENT AREA */}
       <main className="content-right">
         {/* MOBILE HEADER - Show on ALL mobile pages */}
-        {isMobile && (
+         {isMobile && (
           <div className="mobile-header">
             <div className="mobile-header-content">
               <div className="sidebar-logo">
@@ -140,9 +140,7 @@ function MainLayout() {
                 </a>
               </div>
 
-              <div className="sidebar-tagline">
-                <h2>Join 500+ companies ensuring MCA audit trail readiness</h2>
-              </div>
+              
             </div>
           </div>
         )}
