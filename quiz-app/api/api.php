@@ -24,14 +24,20 @@ try {
     $input = file_get_contents('php://input');
     $data = json_decode($input, true);
     
-    if (!isset($data['answers']) || !isset($data['user'])) {
+    if (!isset($data['answers']) || !isset($data['email'])) {
         http_response_code(400);
-        echo json_encode(['error' => 'Invalid data']);
+        echo json_encode(['error' => 'Invalid data payload']);
         exit;
     }
     
     $answers = $data['answers'];
-    $user = $data['user'];
+    // User fields are at root lever per standardized payload
+    $userName = $data['name'] ?? 'Unknown';
+    $userEmail = $data['email'] ?? 'Unknown';
+    $userCompany = $data['company'] ?? 'Unknown';
+    $userJobTitle = $data['jobTitle'] ?? 'Unknown';
+    $userPhone = $data['phone'] ?? 'Unknown';
+    $userMessage = $data['message'] ?? 'Unknown';
     
     $filteredAnswers = array_filter($answers, function($answer) {
         return $answer !== null;
@@ -45,7 +51,7 @@ try {
     }
     
     $totalQuestions = count($filteredAnswers);
-    $scorePercentage = round(($yesCount / $totalQuestions) * 100);
+    $scorePercentage = $totalQuestions > 0 ? round(($yesCount / $totalQuestions) * 100) : 0;
     
     // Calculate risk level
     $riskLevel = 'High Risk';
@@ -66,11 +72,12 @@ try {
     
     $submission = array(
         'timestamp' => date('Y-m-d H:i:s'),
-        'name' => $user['name'] ?? 'Unknown',
-        'jobTitle' => $user['jobTitle'] ?? 'Unknown',
-        'company' => $user['company'] ?? 'Unknown',
-        'email' => $user['email'] ?? 'Unknown',
-        'phone' => $user['phone'] ?? 'Unknown',
+        'name' => $userName,
+        'jobTitle' => $userJobTitle,
+        'company' => $userCompany,
+        'email' => $userEmail,
+        'phone' => $userPhone,
+        'message' => $userMessage,
         'yesCount' => $yesCount,
         'totalQuestions' => $totalQuestions,
         'scorePercentage' => $scorePercentage,
@@ -79,6 +86,42 @@ try {
     );
     
     @file_put_contents(__DIR__ . '/submissions.txt', json_encode($submission) . "\n", FILE_APPEND);
+    
+    // ===== SEND TO ZAPIER (server-side, no CORS issues) =====
+    $zapierSent = false;
+    try {
+        $zapierWebhookUrl = 'https://hooks.zapier.com/hooks/catch/26723293/uxdfgdv/';
+        $answersString = implode(', ', array_map(function($a) {
+            if ($a === null) return 'null';
+            return strtolower($a) === 'yes' ? 'Yes' : 'No';
+        }, $answers));
+
+        $zapierData = json_encode([
+            'firstName' => $userName,
+            'email'     => $userEmail,
+            'company'   => $userCompany,
+            'job_title' => $userJobTitle,
+            'score'     => $scorePercentage,
+            'Answers'   => $answersString,
+        ]);
+        
+        $ch = curl_init($zapierWebhookUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $zapierData);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+        $zapierResponse = curl_exec($ch);
+        $zapierHttpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        $zapierSent = ($zapierHttpCode >= 200 && $zapierHttpCode < 300);
+        if (!$zapierSent) {
+            error_log('Zapier webhook returned HTTP ' . $zapierHttpCode . ': ' . $zapierResponse);
+        }
+    } catch (Exception $ze) {
+        error_log('Zapier error: ' . $ze->getMessage());
+    }
     
     // Send emails
     $emailSent = false;
@@ -145,7 +188,7 @@ try {
                             <img src='https://togglenow.com/wp-content/uploads/2024/06/Tnow-white-logo-e1698911941985-1-1.png' alt='ToggleNow'>
                         </div>
                         <div class='content'>
-                            <p class='greeting'><strong>Dear {$user['name']},</strong></p>
+                            <p class='greeting'><strong>Dear {$userName},</strong></p>
                             
                             <p>Thank you for taking the time to complete our <strong>15-point SAP MCA Audit Trail (Rule 11(g)) Readiness Assessment</strong>. Your participation demonstrates a strong commitment to <strong>data integrity, compliance, and corporate governance</strong> within your organization.</p>
                             
@@ -200,7 +243,7 @@ try {
             $mail->setFrom('social@togglenow.com', 'ToggleNow MCA Team'); // visible From (alias)
             $mail->addReplyTo('social@togglenow.com', 'ToggleNow MCA Team'); // replies go to alias
             $mail->Sender = 'social@togglenow.com'; // envelope sender (Return-Path), may be overridden by Gmail
-            $mail->addAddress($user['email'], $user['name'] ?? '');
+            $mail->addAddress($userEmail, $userName);
             $mail->isHTML(true);
             $mail->Subject = 'Your SAP MCA Audit Trail Readiness Assessment Results';
             $mail->Body = $emailHTML;
@@ -223,7 +266,7 @@ try {
             // $mail->addCC('sales@togglenow.com', 'Sales Team');
             // $mail->addCC('udaya@mosol9.com', 'Udaya');
             
-            $mail->Subject = 'New MCA Quiz Submission - ' . ($user['name'] ?? 'Unknown') . ' from ' . ($user['company'] ?? 'Unknown');
+            $mail->Subject = 'New MCA Quiz Submission - ' . $userName . ' from ' . $userCompany;
             
             $adminEmailHTML = "
                 <html>
@@ -244,11 +287,12 @@ try {
                         <h2>New MCA Quiz Submission Received</h2>
                         <div class='info-box'>
                             <p><strong>Timestamp:</strong> " . date('Y-m-d H:i:s') . "</p>
-                            <p><strong>Name:</strong> {$user['name']}</p>
-                            <p><strong>Job Title:</strong> {$user['jobTitle']}</p>
-                            <p><strong>Company:</strong> {$user['company']}</p>
-                            <p><strong>Email:</strong> {$user['email']}</p>
-                            <p><strong>Phone:</strong> {$user['phone']}</p>
+                            <p><strong>Name:</strong> {$userName}</p>
+                            <p><strong>Job Title:</strong> {$userJobTitle}</p>
+                            <p><strong>Company:</strong> {$userCompany}</p>
+                            <p><strong>Email:</strong> {$userEmail}</p>
+                            <p><strong>Phone:</strong> {$userPhone}</p>
+                            <p><strong>Message:</strong> {$userMessage}</p>
                         </div>
                         <div class='score-highlight'>
                             <p><strong>Score:</strong> {$scorePercentage}% ({$yesCount} out of {$totalQuestions} answered 'Yes')</p>

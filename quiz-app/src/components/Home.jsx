@@ -7,10 +7,8 @@ function Home() {
     <div className="home-content">
       <div className="home-inner">
         <h1 className="main-heading">
-          Is your SAP system MCA Rule 11(g) compliant? Most aren't. Find out in
-          3 minutes.
+          MCA Rule 11(g) Is Now an Audit Requirement — Is Your SAP Ready?
         </h1>
-        <h2 className="sub-heading">Self-Check Quiz</h2>
 
         <div className="warning-box">
           <h3>99% Compliance = 100% Non-compliance</h3>
@@ -19,14 +17,14 @@ function Home() {
         <div className="cta-section">
           <h2 className="cta-title">Avoid Penalties. Prove Compliance.</h2>
           <p className="cta-description">
-            Take the MCA Audit-Trail Quiz and see where you stand.
+            Identify Your MCA Audit-Trail Compliance Risk in Minutes.
           </p>
           <div className="cta-button">
             <button
               className="btn-primary-large"
               onClick={() => navigate("/quiz/1")}
             >
-              Start the Quiz
+              Start the Assessment
             </button>
             <button
               className="link-button"

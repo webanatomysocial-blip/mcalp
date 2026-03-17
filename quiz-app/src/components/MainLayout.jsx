@@ -9,7 +9,7 @@ function MainLayout() {
     () => [
       {
         text: "ToggleNow helped us achieve 100% MCA compliance in just 3 weeks. Their expertise in SAP audit trails is unmatched.",
-        name: "CFO",
+        name: "CFO, Information Technology",
       },
       {
         text: "The audit trail quiz immediately identified our compliance gaps. Highly recommend for any SAP user concerned about MCA rules.",
@@ -17,7 +17,7 @@ function MainLayout() {
       },
       {
         text: "Professional, quick, and thorough. ToggleNow's solution saved us from potential penalties and audit issues.",
-        name: "SAP Manager",
+        name: "SAP Manager, Petrochemical company",
       },
     ],
     [],
@@ -85,7 +85,10 @@ function MainLayout() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <img src="../../src/assets/togglenow.png" alt="ToggleNow" />
+                <img
+                  src="https://mcalp.togglenow.com/togglenow.png"
+                  alt="ToggleNow"
+                />
               </a>
             </div>
 
@@ -131,7 +134,7 @@ function MainLayout() {
                   rel="noopener noreferrer"
                 >
                   <img
-                    src="https://togglenow.com/wp-content/uploads/2024/06/Tnow-white-logo-e1698911941985-1-1.png"
+                    src="https://mcalp.togglenow.com/togglenow.png"
                     alt="ToggleNow"
                   />
                 </a>
